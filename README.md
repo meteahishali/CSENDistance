@@ -1,109 +1,133 @@
-# Example usage of Convolutional Support Estimator Network (CSEN) regressor for the distance estimation task over KITTI dataset:
+Distance Estimation using Convolutional Support Estimator Network (CSEN)
+=============================
 
-Software environment, utilized libraries with versions:\
+This repository includes the implentation of the methods in [Paper]().
+
+Software environment:
 ```
+1. Python with the following version and libraries.
 python == 3.7.7
-tensorflow==2.1.0
-pandas == 1.0.4
-tqdm
+tensorflow == 2.1.0
+Numpy == 1.18.5
+Matplotlib == 3.2.2
+SciPy == 1.5.0
+scikit-learn == 0.24.1
+argparse == 1.1
 OpenCV == 4.2.0
-Numpy == 1.18.1
-Pillow (PIL) == 1.1.7
-SciPy == 1.5.2
-Scikit-Image == 0.16.2
+pandas == 1.0.4
+tqdm == 4.46.1
+```
+```
+2. MATLAB -> MATLAB R2019a.
 ```
 
-# KITTI dataset preprocessing.
+Content:
+- [Getting started with the KITTI Dataset](#Getting-started-with-Early-QaTa-COV19-Dataset)
+- [Feature Extraction](#Feature-Extraction)
+- [Distance Estimation via Representation based Classification](#Distance-Estimation-via-Representation-based-Classification)
+    - [Sparse Representation based Classification (SRC)](#Sparse-Representation-based-Classification-SRC)
+    - [Collaborative Representation based Classification (CRC)](#Collaborative-Representation-based-Classification-CRC)
+- [Distance Estimation using Representation based Regression (RbR)](#Distance-Estimation-using-Reoresentation-based-Regression-RbR)
+    - [Convolutional Support Estimator Networks (CSEN)](#Convolutional-Support-Estimator-Networks-CSEN)
+    - [Compressive Learning CSEN (CL-CSEN)](#Compressive-Learning-CSEN-CL-CSEN)
+- [Distance Estimation using Support Vector Regressor (SVR)](Distance-Estimation-using-Support-Vector-Regressor-SVR)
+- [Citation](#Citation)
+- [References](#References)
 
-1. First generate csv file for the KITTI annotations:
-    ```
-    python kitti-data/generate-csv.py --input=kitti-data/original_data/train_annots/ --output=kitti-data/annotations.csv
-    ```
+## Getting started with the KITTI Dataset
 
-    You could download the kitti dataset from here: https://tuni-my.sharepoint.com/:f:/g/personal/mete_ahishali_tuni_fi/ErxxrsqyqyVKuFmxJhZfmIwBQ3tE7r_e_1aqjmD9QX2tjA?e=JT92JH
+The left color images of object dataset and the corresponding training labels can be obtained from [3D Object Detection Evaluation 2017](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d).
 
-2. Rough dense depth-maps are computed using Struct2Depth pre-trained network.\
-    V. Casser, S. Pirk, R. Mahjourian, A. Angelova, Depth Prediction Without the Sensors: Leveraging Structure for Unsupervised Learning from Monocular Videos, AAAI Conference on Artificial Intelligence, 2019 https://arxiv.org/pdf/1811.06152.pdf
+```
+unzip data_object_image_2.zip
+unzip data_object_label_2.zip
+```
 
-    Code is released as a part of Tensorflow models:\
-    https://github.com/tensorflow/models/tree/archive/research/struct2depth
+After unzipping, move them under ```kitti-data/``` folder and using ```generate-csv.py``` script generate a csv file for the KITTI annotations:
 
-    We are using the Tensorflow model, trained on the Cityscapes dataset, to compute depth maps of the Kitti dataset. The model can be downloaded from here:\
-    https://tuni-my.sharepoint.com/:f:/g/personal/mete_ahishali_tuni_fi/EriDZHnpwb9Eo3lWmbNYVtUB7Bx9LkAJdjxgYueb7k0yjw?e=DawMzT
+```
+python kitti-data/generate-csv.py \
+    --input=kitti-data/training/label_2/ \
+    --output=kitti-data/annotations.csv
+```
 
-    You could set the input and output directories and give the model path in the script:
+## Feature Extraction
 
-    ```
-    input_dir="kitti-data/original_data/train_images"
-    output_dir="kitti-data/extracted_depth_masks/"
-    model_checkpoint="struct2depth_model_cityscapes/model-154688"
-    ```
+Features are extracted using ```feature_extraction.py``` script. The supported models are ```DenseNet121```, ```VGG19```, and ```ResNet50``` (DenseNet-121 [1], VGG19 [2], ResNet-50 [3]):
 
-    Example code execution:
+```
+python feature_extraction.py --model VGG19 
+```
 
-    ```
-    python inference.py \
-        --logtostderr \
-        --file_extension png \
-        --depth \
-        --egomotion true \
-        --input_dir $input_dir \
-        --output_dir $output_dir \
-        --model_ckpt $model_checkpoint
-    ```
+Next, the features are further processed and ordered using ```processFeatures.m```. In the script, please also set the proper model name ```param.modelName``` to either ```DenseNet121```, ```VGG19```, or ```ResNet50``` and ```param.DicDesign``` to ```2D``` or ```1D``` corresponding to the dictionary designs used in CSEN and CL-CSEN approaches. This procedure is only needed for the CSEN, CL-CSEN, and SVR approaches. If you are only interested in running SRC and CRC methods, you may proceed to the related sections: [SRC](#Sparse-Representation-based-Classification-SRC) and [CRC](#Collaborative-Representation-based-Classification-CRC). Note that the script of ```processFeatures.m``` produces the predicted distances using the CRC-light model that is discussed in the paper.
 
-    Note: If you want to skip this step, I have included the extracted depth maps in the provided link of OneDrive folder in the 1st step.\
-    (https://tuni-my.sharepoint.com/:f:/g/personal/mete_ahishali_tuni_fi/ErxxrsqyqyVKuFmxJhZfmIwBQ3tE7r_e_1aqjmD9QX2tjA?e=JT92JH)
+## Distance Estimation via Representation based Classification
 
-3. Crop object features from the computed dense depth masks in the previous step.
+We formulate the distance estimation task as a representation based classification problem by estimating the quantized distance values. For example, for the objects between [0.5, 60.5] meters away from the camera, we estimate a quantized distance level from 60 different distance levels ranging between [1, 60] with 1-meter senstivity.
 
-    ```
-    cd csen-regressor/
+### Sparse Representation based Classification (SRC)
 
-    python kitti_preprocess/cropper_mask_kitti.py
-    ```
+There are implemented 8 different SRC algorithms for the distance estimation task including ADMM [4], Dalm [5], OMP [5], Homotopy [6], GPSR [7], L1LS [8], ℓ1-magic [9], and Palm [5]. You may run all of them in once as follows:
+```
+cd src/
+run main.m
+```
+Alternatively or preferably (e.g., you may choose a specific SRC method since the required run-time is huge for running all SRC methods in once), the selected ones can be defined in the script:
+```
+l1method={'solve_ADMM','solve_dalm','solve_OMP','solve_homotopy','solveGPSR_BCm', 'solve_L1LS','solve_l1magic','solve_PALM'}; %'solve_PALM' is very slow
+```
+Similarly, please also set the proper model name ```param.modelName``` either ```DenseNet121```, ```VGG19```, or ```ResNet50```.
 
-    Parameters in the script:
-    ```
-    Sizee = 64 # Feature size, e.g., 32 x 32, 1024-D features.\
-    Occlusion:\
-    Integer (0,1,2,3) indicating occlusion state:\
-        0 = fully visible, 1 = partly occluded\
-        2 = largely occluded, 3 = unknown.\
-    Default selection: 0 and 1 cases.
-    ```
+### Collaborative Representation based Classification (CRC)
+Distance estimation using the CRC method [10] can be run as follows:
+```
+cd crc\
+run main.m
+```
+The CRC-light model can be run by setting ```CRC_light = 1``` in the script. Please change the model name ```param.modelName``` to ```DenseNet121```, ```VGG19```, or ```ResNet50``` to try different features.
 
-    The resulted features are saved in XD_features_mask_kitti.mat file where X is the specified number of features per object sample.
+## Distance Estimation using Representation based Regression (RbR)
 
-# Distance Estimation
-4. Run crc.m MATLAB script (written on MATLAB R2019a) for Collaborative Representation based Classification (CRC) algorithm.\
-    There is Pre-processing step: Quantization and Sample Selection.\
-    The outputs are recorded in crc_output folder.
+Contrary to previous methos, it is possible to directly estimate the object distance information without the quantization step using CSEN and CL-CSEN approaches. As CSEN and CL-CSEN approaches still utilize the representative dictionary, we introduce the term <em>Representation based Regression (RbR)</em> for the proposed framework.
 
-    Parameters in the script:
-    ```
-    param.dictionary_size = 20; % Samples per class in the dictionary.
-    These are the train/test proportations.
-    param.train_size = 2;
-    param.test_size = 2;
-    MR = 0.5; % Measurement rate.
-    measurement_type = 'eigenface'; % Gauss, eigenface, or None.
-    projection_matrix = 'l2_norm'; % minimum_norm or l2_norm.
-    ```
+### Convolutional Support Estimator Network (CSEN)
+The CSEN implementation is run as follows:
+```
+python regressor_main.py --method CSEN --feature_type DenseNet121
+```
+Note that similarly, the feature type can be set to ```DenseNet121```, ```VGG19```, or ```ResNet50```. If you like, only testing can be performed using the provided weights by
+```
+python regressor_main.py --method CSEN --feature_type DenseNet121 --weights True
+```
+### Compressive Learning CSEN (CL-CSEN)
 
-5. The Convolutional Support Estimator Network (CSEN) implementation for the distance estimation.
-    ```
-    python csen_main.py
-    ```
+The CL-CSEN implementation is run as follows:
+```
+python regressor_main.py --method CL-CSEN --feature_type DenseNet121
+```
+The parameter ```--feature_type``` can be set to ```DenseNet121```, ```VGG19```, or ```ResNet50```.
 
-    Parameters in the script:
-    ```
-    data = '4096D_crc_output/' 
-    MR = '0.5' # Measurement rate.
-    weights = False # If the weights are already available.
-    modelType = 'CSEN' # CSEN or MLP.
-    ```
+Testing of CL-CSEN with the provided weights:
+```
+python regressor_main.py --method CL-CSEN --feature_type DenseNet121 --weights True
+```
 
-    The training histories, predictions, and performance results are stored in results directory for each fold.
+## Distance Estimation using Support Vector Regressor (SVR)
 
-    modelType could be change to MLP to test MLP performance as the competing method using the calculated features.
+The SVR method is implemented as a competing regressor. We use the Nystroem methof for the kernel approximation since it is unfeasible to compute exact kernel mapping with the given high-dimensional dataset. Hyperparameter search is applied with grid search and then the performance is computed with the found optimal SVR parameters:
+```
+python regressor_main.py --method SVR --feature_type DenseNet121
+```
+The parameter ```--feature_type``` can be set to ```DenseNet121```, ```VGG19```, or ```ResNet50```.
+
+## References
+[1] G. Huang, Z. Liu, L. Van Der Maaten, and K. Q. Weinberger, "Densely connected convolutional networks," *in Proc. IEEE Conf. Comput. Vision and Pattern Recognit. (CVPR)*, 2017, pp. 4700–4708.
+[2] K. Simonyan and A. Zisserman, "Very deep convolutional networks for large-scale image recognition," *arXiv preprint arXiv:1409.1556*, 2014.
+[3] K. He, X. Zhang, S. Ren, and J. Sun, "Deep residual learning for image recognition," *in Proc. IEEE Conf. Comput. Vision and Pattern Recognit. (CVPR)*, 2016, pp. 770–778.
+[4] S. Boyd, N. Parikh, E. Chu, B. Peleato, J. Eckstein et al., "Distributed optimization and statistical learning via the alternating direction method of multipliers," *Found. Trends Mach. Learn.*, vol. 3, no. 1, 2011.
+[5] A. Y. Yang, Z. Zhou, A. G. Balasubramanian, S. S. Sastry, and Y. Ma, "Fast l1-minimization algorithms for robust face recognition," *IEEE Trans. Image Process.*, vol. 22, no. 8, pp. 3234–3246, 2013.
+[6] D. M. Malioutov, M. Cetin, and A. S. Willsky, "Homotopy continuation for sparse signal representation," *in Proc. IEEE Int. Conf. Acoust., Speech, and Signal Process. (ICASSP)*, vol. 5, 2005, pp. 733–736.
+[7] M. A. Figueiredo, R. D. Nowak, and S. J. Wright, "Gradient projection for sparse reconstruction: Application to compressed sensing and other inverse problems," *IEEE J. Sel. Topics Signal Process.*, vol. 1, no. 4, pp. 586–597, 2007.
+[8] K. Koh, S.-J. Kim, and S. Boyd, "An interior-point method for large-scale l1-regularized logistic regression," *J. Mach. Learn. Res.*, vol. 8, pp. 1519–1555, 2007.
+[9] E. Candes and J. Romberg, "l1-magic: Recovery of sparse signals via convex programming," *Caltech, Tech. Rep.*, 2005. [Online]. Available: https://statweb.stanford.edu/∼candes/software/l1magic/downloads/l1magic.pdf
+[10] L. Zhang, M. Yang, and X. Feng, "Sparse representation or collaborative representation: Which helps face recognition?" *in Proc. IEEE Int. Conf. Comput. Vision (ICCV)*, 2011, pp. 471–478.
