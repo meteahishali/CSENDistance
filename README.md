@@ -25,10 +25,10 @@ Content:
 - [Citation](#Citation)
 - [Getting started with the KITTI Dataset](#Getting-started-with-the-KITTI-Dataset)
 - [Feature Extraction](#Feature-Extraction)
-- [Distance Estimation via Representation based Classification](#Distance-Estimation-via-Representation-based-Classification)
-    - [Sparse Representation based Classification (SRC)](#Sparse-Representation-based-Classification-SRC)
-    - [Collaborative Representation based Classification (CRC)](#Collaborative-Representation-based-Classification-CRC)
-- [Distance Estimation using Representation based Regression (RbR)](#Distance-Estimation-using-Representation-based-Regression-RbR)
+- [Distance Estimation via Representation-based Classification](#Distance-Estimation-via-Representation-based-Classification)
+    - [Sparse Representation-based Classification (SRC)](#Sparse-Representation-based-Classification-SRC)
+    - [Collaborative Representation-based Classification (CRC)](#Collaborative-Representation-based-Classification-CRC)
+- [Distance Estimation using Representation-based Regression (RbR)](#Distance-Estimation-using-Representation-based-Regression-RbR)
     - [Convolutional Support Estimator Network (CSEN)](#Convolutional-Support-Estimator-Network-CSEN)
     - [Compressive Learning CSEN (CL-CSEN)](#Compressive-Learning-CSEN-CL-CSEN)
 - [Distance Estimation using Support Vector Regressor (SVR)](#Distance-Estimation-using-Support-Vector-Regressor-SVR)
@@ -76,11 +76,11 @@ python feature_extraction.py --model VGG19
 
 Next, the features are further processed and ordered using ```processFeatures.m```. In the script, please also set the proper model name ```param.modelName``` to either ```DenseNet121```, ```VGG19```, or ```ResNet50``` and ```param.DicDesign``` to ```2D``` or ```1D``` corresponding to the dictionary designs used in CSEN and CL-CSEN approaches. This procedure is only needed for the CSEN, CL-CSEN, and SVR approaches. If you are only interested in running SRC and CRC methods, you may proceed to the related sections: [SRC](#Sparse-Representation-based-Classification-SRC) and [CRC](#Collaborative-Representation-based-Classification-CRC). Note that the script of ```processFeatures.m``` produces the predicted distances using the CRC-light model that is discussed in the paper.
 
-## Distance Estimation via Representation based Classification
+## Distance Estimation via Representation-based Classification
 
-We formulate the distance estimation task as a representation based classification problem by estimating the quantized distance values. For example, for the objects between [0.5, 60.5] meters away from the camera, we estimate a quantized distance level from 60 different distance levels ranging between [1, 60] with 1-meter senstivity.
+We formulate the distance estimation task as a representation-based classification problem by estimating the quantized distance values. For example, for the objects between [0.5, 60.5] meters away from the camera, we estimate a quantized distance level from 60 different distance levels ranging between [1, 60] with 1-meter senstivity.
 
-### Sparse Representation based Classification (SRC)
+### Sparse Representation-based Classification (SRC)
 
 There are implemented 8 different SRC algorithms for the distance estimation task including ADMM [4], Dalm [5], OMP [5], Homotopy [6], GPSR [7], L1LS [8], ℓ1-magic [9], and Palm [5]. You may run all of them in once as follows:
 ```
@@ -93,7 +93,7 @@ l1method={'solve_ADMM','solve_dalm','solve_OMP','solve_homotopy','solveGPSR_BCm'
 ```
 Similarly, please also set the proper model name ```param.modelName``` to either ```DenseNet121```, ```VGG19```, or ```ResNet50```.
 
-### Collaborative Representation based Classification (CRC)
+### Collaborative Representation-based Classification (CRC)
 Distance estimation using the CRC method [10] can be run as follows:
 ```
 cd crc\
@@ -101,9 +101,9 @@ run main.m
 ```
 The CRC-light model can be run by setting ```CRC_light = 1``` in the script. Please change the model name ```param.modelName``` to ```DenseNet121```, ```VGG19```, or ```ResNet50``` to try different features.
 
-## Distance Estimation using Representation based Regression (RbR)
+## Distance Estimation using Representation-based Regression (RbR)
 
-Contrary to previous methos, it is possible to directly estimate the object distance information without the quantization step using CSEN and CL-CSEN approaches. As CSEN and CL-CSEN approaches still utilize the representative dictionary, we introduce the term <em>Representation based Regression (RbR)</em> for the proposed framework.
+Contrary to previous methos, it is possible to directly estimate the object distance information without the quantization step using CSEN and CL-CSEN approaches. As CSEN and CL-CSEN approaches still utilize the representative dictionary, we introduce the term <em>Representation-based Regression (RbR)</em> for the proposed framework.
 
 ### Convolutional Support Estimator Network (CSEN)
 The CSEN implementation is run as follows:
