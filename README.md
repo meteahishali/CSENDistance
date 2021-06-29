@@ -23,7 +23,7 @@ tqdm == 4.46.1
 
 Content:
 - [Citation](#Citation)
-- [Getting started with the KITTI Dataset](#Getting-started-with-Early-QaTa-COV19-Dataset)
+- [Getting started with the KITTI Dataset](#Getting-started-with-the-KITTI-Dataset)
 - [Feature Extraction](#Feature-Extraction)
 - [Distance Estimation via Representation based Classification](#Distance-Estimation-via-Representation-based-Classification)
     - [Sparse Representation based Classification (SRC)](#Sparse-Representation-based-Classification-SRC)
