@@ -1,7 +1,7 @@
-Distance Estimation using Convolutional Support Estimator Network (CSEN)
+Representation Based Regression for Object Distance Estimation
 =============================
 
-This repository includes the implentation of the methods in [Paper]().
+This repository includes the implentation of the methods in [Representation Based Regression for Object Distance Estimation](https://arxiv.org/abs/2106.14208).
 
 Software environment:
 ```
@@ -22,17 +22,32 @@ tqdm == 4.46.1
 ```
 
 Content:
+- [Citation](#Citation)
 - [Getting started with the KITTI Dataset](#Getting-started-with-Early-QaTa-COV19-Dataset)
 - [Feature Extraction](#Feature-Extraction)
 - [Distance Estimation via Representation based Classification](#Distance-Estimation-via-Representation-based-Classification)
     - [Sparse Representation based Classification (SRC)](#Sparse-Representation-based-Classification-SRC)
     - [Collaborative Representation based Classification (CRC)](#Collaborative-Representation-based-Classification-CRC)
-- [Distance Estimation using Representation based Regression (RbR)](#Distance-Estimation-using-Reoresentation-based-Regression-RbR)
-    - [Convolutional Support Estimator Networks (CSEN)](#Convolutional-Support-Estimator-Networks-CSEN)
+- [Distance Estimation using Representation based Regression (RbR)](#Distance-Estimation-using-Representation-based-Regression-RbR)
+    - [Convolutional Support Estimator Network (CSEN)](#Convolutional-Support-Estimator-Network-CSEN)
     - [Compressive Learning CSEN (CL-CSEN)](#Compressive-Learning-CSEN-CL-CSEN)
-- [Distance Estimation using Support Vector Regressor (SVR)](Distance-Estimation-using-Support-Vector-Regressor-SVR)
-- [Citation](#Citation)
+- [Distance Estimation using Support Vector Regressor (SVR)](#Distance-Estimation-using-Support-Vector-Regressor-SVR)
 - [References](#References)
+
+## Citation
+
+If you use method(s) provided in this repository, please cite the following paper:
+
+```
+@misc{ahishali2021representation,
+      title={Representation Based Regression for Object Distance Estimation}, 
+      author={Mete Ahishali and Mehmet Yamac and Serkan Kiranyaz and Moncef Gabbouj},
+      year={2021},
+      eprint={2106.14208},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
 
 ## Getting started with the KITTI Dataset
 
@@ -76,7 +91,7 @@ Alternatively or preferably (e.g., you may choose a specific SRC method since th
 ```
 l1method={'solve_ADMM','solve_dalm','solve_OMP','solve_homotopy','solveGPSR_BCm', 'solve_L1LS','solve_l1magic','solve_PALM'}; %'solve_PALM' is very slow
 ```
-Similarly, please also set the proper model name ```param.modelName``` either ```DenseNet121```, ```VGG19```, or ```ResNet50```.
+Similarly, please also set the proper model name ```param.modelName``` to either ```DenseNet121```, ```VGG19```, or ```ResNet50```.
 
 ### Collaborative Representation based Classification (CRC)
 Distance estimation using the CRC method [10] can be run as follows:
@@ -95,7 +110,7 @@ The CSEN implementation is run as follows:
 ```
 python regressor_main.py --method CSEN --feature_type DenseNet121
 ```
-Note that similarly, the feature type can be set to ```DenseNet121```, ```VGG19```, or ```ResNet50```. If you like, only testing can be performed using the provided weights by
+Note that similarly, the feature type can be set to ```DenseNet121```, ```VGG19```, or ```ResNet50```. If you like, only testing can be performed using the provided weights:
 ```
 python regressor_main.py --method CSEN --feature_type DenseNet121 --weights True
 ```
@@ -114,20 +129,20 @@ python regressor_main.py --method CL-CSEN --feature_type DenseNet121 --weights T
 
 ## Distance Estimation using Support Vector Regressor (SVR)
 
-The SVR method is implemented as a competing regressor. We use the Nystroem methof for the kernel approximation since it is unfeasible to compute exact kernel mapping with the given high-dimensional dataset. Hyperparameter search is applied with grid search and then the performance is computed with the found optimal SVR parameters:
+The SVR method is implemented as a competing regressor. We use the Nystroem method for the kernel approximation since it is unfeasible to compute exact kernel mapping with the given high-dimensional dataset. Hyperparameter search is applied with grid search and then the performance is computed with the found optimal SVR parameters:
 ```
 python regressor_main.py --method SVR --feature_type DenseNet121
 ```
 The parameter ```--feature_type``` can be set to ```DenseNet121```, ```VGG19```, or ```ResNet50```.
 
 ## References
-[1] G. Huang, Z. Liu, L. Van Der Maaten, and K. Q. Weinberger, "Densely connected convolutional networks," *in Proc. IEEE Conf. Comput. Vision and Pattern Recognit. (CVPR)*, 2017, pp. 4700–4708.
-[2] K. Simonyan and A. Zisserman, "Very deep convolutional networks for large-scale image recognition," *arXiv preprint arXiv:1409.1556*, 2014.
-[3] K. He, X. Zhang, S. Ren, and J. Sun, "Deep residual learning for image recognition," *in Proc. IEEE Conf. Comput. Vision and Pattern Recognit. (CVPR)*, 2016, pp. 770–778.
-[4] S. Boyd, N. Parikh, E. Chu, B. Peleato, J. Eckstein et al., "Distributed optimization and statistical learning via the alternating direction method of multipliers," *Found. Trends Mach. Learn.*, vol. 3, no. 1, 2011.
-[5] A. Y. Yang, Z. Zhou, A. G. Balasubramanian, S. S. Sastry, and Y. Ma, "Fast l1-minimization algorithms for robust face recognition," *IEEE Trans. Image Process.*, vol. 22, no. 8, pp. 3234–3246, 2013.
-[6] D. M. Malioutov, M. Cetin, and A. S. Willsky, "Homotopy continuation for sparse signal representation," *in Proc. IEEE Int. Conf. Acoust., Speech, and Signal Process. (ICASSP)*, vol. 5, 2005, pp. 733–736.
-[7] M. A. Figueiredo, R. D. Nowak, and S. J. Wright, "Gradient projection for sparse reconstruction: Application to compressed sensing and other inverse problems," *IEEE J. Sel. Topics Signal Process.*, vol. 1, no. 4, pp. 586–597, 2007.
-[8] K. Koh, S.-J. Kim, and S. Boyd, "An interior-point method for large-scale l1-regularized logistic regression," *J. Mach. Learn. Res.*, vol. 8, pp. 1519–1555, 2007.
-[9] E. Candes and J. Romberg, "l1-magic: Recovery of sparse signals via convex programming," *Caltech, Tech. Rep.*, 2005. [Online]. Available: https://statweb.stanford.edu/∼candes/software/l1magic/downloads/l1magic.pdf
+[1] G. Huang, Z. Liu, L. Van Der Maaten, and K. Q. Weinberger, "Densely connected convolutional networks," *in Proc. IEEE Conf. Comput. Vision and Pattern Recognit. (CVPR)*, 2017, pp. 4700–4708. \
+[2] K. Simonyan and A. Zisserman, "Very deep convolutional networks for large-scale image recognition," *arXiv preprint arXiv:1409.1556*, 2014. \
+[3] K. He, X. Zhang, S. Ren, and J. Sun, "Deep residual learning for image recognition," *in Proc. IEEE Conf. Comput. Vision and Pattern Recognit. (CVPR)*, 2016, pp. 770–778. \
+[4] S. Boyd, N. Parikh, E. Chu, B. Peleato, J. Eckstein et al., "Distributed optimization and statistical learning via the alternating direction method of multipliers," *Found. Trends Mach. Learn.*, vol. 3, no. 1, 2011. \
+[5] A. Y. Yang, Z. Zhou, A. G. Balasubramanian, S. S. Sastry, and Y. Ma, "Fast l1-minimization algorithms for robust face recognition," *IEEE Trans. Image Process.*, vol. 22, no. 8, pp. 3234–3246, 2013. \
+[6] D. M. Malioutov, M. Cetin, and A. S. Willsky, "Homotopy continuation for sparse signal representation," *in Proc. IEEE Int. Conf. Acoust., Speech, and Signal Process. (ICASSP)*, vol. 5, 2005, pp. 733–736. \
+[7] M. A. Figueiredo, R. D. Nowak, and S. J. Wright, "Gradient projection for sparse reconstruction: Application to compressed sensing and other inverse problems," *IEEE J. Sel. Topics Signal Process.*, vol. 1, no. 4, pp. 586–597, 2007. \
+[8] K. Koh, S.-J. Kim, and S. Boyd, "An interior-point method for large-scale l1-regularized logistic regression," *J. Mach. Learn. Res.*, vol. 8, pp. 1519–1555, 2007. \
+[9] E. Candes and J. Romberg, "l1-magic: Recovery of sparse signals via convex programming," *Caltech, Tech. Rep.*, 2005. [Online]. Available: https://statweb.stanford.edu/∼candes/software/l1magic/downloads/l1magic.pdf \
 [10] L. Zhang, M. Yang, and X. Feng, "Sparse representation or collaborative representation: Which helps face recognition?" *in Proc. IEEE Int. Conf. Comput. Vision (ICCV)*, 2011, pp. 471–478.
