@@ -3,6 +3,8 @@ Representation Based Regression for Object Distance Estimation
 
 This repository includes the implentation of the methods in [Representation Based Regression for Object Distance Estimation](https://arxiv.org/abs/2106.14208).
 
+![Example Results](/images/samples.png)
+
 Software environment:
 ```
 1. Python with the following version and libraries.
@@ -102,6 +104,8 @@ run main.m
 The CRC-light model can be run by setting ```CRC_light = 1``` in the script. Please change the model name ```param.modelName``` to ```DenseNet121```, ```VGG19```, or ```ResNet50``` to try different features.
 
 ## Distance Estimation using Representation-based Regression (RbR)
+
+![CSEN](/images/csen_updated.png)
 
 Contrary to previous methos, it is possible to directly estimate the object distance information without the quantization step using CSEN and CL-CSEN approaches. As CSEN and CL-CSEN approaches still utilize the representative dictionary, we introduce the term <em>Representation-based Regression (RbR)</em> for the proposed framework.
 
