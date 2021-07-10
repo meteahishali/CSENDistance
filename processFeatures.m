@@ -38,9 +38,10 @@ meters(meters_quant == -1, :) = [];
 meters_quant(meters_quant == -1, :) = [];
 
 % Let compute minimum samples per class.
-histt = zeros(length(unique(meters_quant)), 1);
-for i = 1:length(unique(meters_quant))
-   histt(i) = sum(meters_quant == i);
+uni_class = unique(meters_quant);
+histt = zeros(length(uni_class), 1);
+for i = 1:length(uni_class)
+   histt(i) = sum(meters_quant == uni_class(i));
 end
 eqSize = min(histt);
 
