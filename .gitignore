@@ -4,11 +4,14 @@
 *.tar.gz
 *.rar
 
+# Cache
+__pycache__
+
 # Dataset files
-data_object_image_2/
-data_object_label_2/
-training/
-testing/
+data_object_image_2
+data_object_label_2
+training
+testing
 
 # images
 *.png
@@ -16,4 +19,11 @@ testing/
 *.jpeg
 
 # Feature files
-features/
+features
+CSENdata-2D
+competing_splits
+
+# Model / weights
+weights
+*.h5
+results
