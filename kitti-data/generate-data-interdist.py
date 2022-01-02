@@ -17,7 +17,7 @@ column_names = ['filename', 'class', 'truncated', 'occluded', 'observation angle
 df = pd.read_csv(infile, usecols=column_names)
 
 # New shape:
-new_shape = ['filename', 'object_ids', 'x1', 'y1', 'z1', 'x2', 'y2', 'z2', 'interdist']
+new_shape = ['filename', 'object_ids', 'x1', 'y1', 'z1', 'x2', 'y2', 'z2', 'obj distance 2D', 'obj distance 3D']
 df2 = []
 
 go_to = 10
@@ -37,9 +37,10 @@ for ii, row in df.iterrows():
         yloc2 = row2['yloc']
         zloc2 = row2['zloc']
 
-        inter_object_distance = euclidean_distance_3D(xloc, yloc, zloc, xloc2, yloc2, zloc2)
+        inter_object_distance3D = euclidean_distance_3D(xloc, yloc, zloc, xloc2, yloc2, zloc2)
+        inter_object_distance2D = euclidean_distance_2D(xloc, zloc, xloc2, zloc2)
 
-        df2.append([file, (id, id2), xloc, yloc, zloc, xloc2, yloc2, zloc2, inter_object_distance])
+        df2.append([file, (id, id2), xloc, yloc, zloc, xloc2, yloc2, zloc2, inter_object_distance2D, inter_object_distance3D])
 
     if ii%400 == 0:
         print(ii/407.50, '%')
