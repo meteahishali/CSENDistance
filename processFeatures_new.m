@@ -6,7 +6,7 @@
 % Tampere University, Tampere, Finland.
 
 % Firther modified by: Tim Rosenkranz,
-% Goethe Univeristy, Frankfurt, Germany
+% Goethe Univeristy, Frankfurt am Main, Germany
 
 %%
 clc, clear, close all

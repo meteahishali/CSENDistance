@@ -4,7 +4,7 @@ Author: Mete Ahishali,
 Tampere University, Tampere, Finland.
 
 Modified by: Tim Rosenkranz
-Goethe University, Frankfurt, Germany
+Goethe University, Frankfurt am Main, Germany
 """
 import os
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
@@ -72,12 +72,15 @@ for idx, row in df_pairs.iterrows():
 	y12 = int(obj1['ymax'])
 
 	# Feature extraction.
+	# Crop images to 64x64
 	Object0 = cv2.resize(im[y01:y02, x01:x02, :], (64, 64))
 	Object1 = cv2.resize(im[y11:y12, x11:x12, :], (64, 64))
 
+	# Expand dimensions
 	Object0 = np.expand_dims(cv2.cvtColor(Object0, cv2.COLOR_BGR2RGB), axis=0)
 	Object1 = np.expand_dims(cv2.cvtColor(Object1, cv2.COLOR_BGR2RGB), axis=0)
 
+	# Process NN
 	function_name = 'tf.keras.applications.' + modelName[:8].lower() + '.preprocess_input'
 
 	Object0 = eval(function_name + '(Object0)')

@@ -1,3 +1,9 @@
+"""
+Feature extraction using deep models over the KITTI dataset.
+Author: Benedikt Schröter & Tim Rosenkranz
+Goethe University, Frankfurt am Main, Germany
+"""
+
 import pandas as pd
 import numpy as np
 
