@@ -1,7 +1,7 @@
 Representation Based Regression for Object Distance Estimation
 =============================
 
-This repository includes the implentation of the methods in [Representation Based Regression for Object Distance Estimation](https://arxiv.org/abs/2106.14208).
+This repository includes the implentation of the methods in [Representation Based Regression for Object Distance Estimation](https://www.sciencedirect.com/science/article/pii/S089360802200452X).
 
 ![Example Results](/images/samples.png)
 
@@ -41,13 +41,15 @@ Content:
 If you use method(s) provided in this repository, please cite the following paper:
 
 ```
-@misc{ahishali2021representation,
-      title={Representation Based Regression for Object Distance Estimation}, 
-      author={Mete Ahishali and Mehmet Yamac and Serkan Kiranyaz and Moncef Gabbouj},
-      year={2021},
-      eprint={2106.14208},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@article{Ahishali,
+title = {Representation based regression for object distance estimation},
+journal = {Neural Networks},
+volume = {158},
+pages = {15-29},
+year = {2023},
+issn = {0893-6080},
+doi = {https://doi.org/10.1016/j.neunet.2022.11.011},
+author = {Mete Ahishali and Mehmet Yamac and Serkan Kiranyaz and Moncef Gabbouj}
 }
 ```
 
