@@ -39,13 +39,13 @@ We have now included a demo using pretrained weights of ```CL-CSEN``` and ```CL-
 cd demo/
 python demo.py --method CL-CSEN
 ```
-You can also change the method to ```--method CL-CSEN-1D```. Additionally, the feature extraction method can be changed by setting ```--feature_type``` to ```DenseNet121```, ```VGG19```, or ```ResNet50``` (DenseNet-121 [1], VGG19 [2], ResNet-50 [3]). For example,
+Press any key to proceed with the next object in the opened window or press ```q``` to exit. You can also change the method to ```--method CL-CSEN-1D```. Additionally, the feature extraction method can be changed by setting ```--feature_type``` to ```DenseNet121```, ```VGG19```, or ```ResNet50``` (DenseNet-121 [1], VGG19 [2], ResNet-50 [3]). For example,
 
 ```
 python demo.py --method CL-CSEN --feature_type ResNet50 
 ```
 
-Content:
+## Content:
 - [Citation](#Citation)
 - [Getting started with the KITTI Dataset](#Getting-started-with-the-KITTI-Dataset)
 - [Feature Extraction](#Feature-Extraction)
