@@ -7,6 +7,15 @@ This repository includes the implentation of the methods in [Representation Base
 
 Software environment:
 ```
+conda create -n distance
+conda activate distance
+conda install anaconda::tensorflow-gpu
+pip install opencv-contrib-python
+pip install pandas==1.0.4
+pip install tqdm==4.46.1
+pip install scikit-learn==0.24.1
+```
+```
 1. Python with the following version and libraries.
 python == 3.7.7
 tensorflow == 2.1.0
@@ -21,6 +30,19 @@ tqdm == 4.46.1
 ```
 ```
 2. MATLAB -> MATLAB R2019a.
+```
+## Demo** (New)
+
+We have now included a demo using pretrained weights of ```CL-CSEN``` and ```CL-CSEN-1D``` methods. First, you need to download KITTI Dataset, refer to [Getting started with the KITTI Dataset](#Getting-started-with-the-KITTI-Dataset), then the demo can be run as follows,
+
+```
+cd demo/
+python demo.py --method CL-CSEN
+```
+You can also change the method to ```--method CL-CSEN-1D```. Additionally, the feature extraction method can be changed by setting ```--feature_type``` to ```DenseNet121```, ```VGG19```, or ```ResNet50``` (DenseNet-121 [1], VGG19 [2], ResNet-50 [3]). For example,
+
+```
+python demo.py --method CL-CSEN --feature_type ResNet50 
 ```
 
 Content:
