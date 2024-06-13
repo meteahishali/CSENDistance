@@ -1,2 +1,3 @@
 *.m linguist-detectable=false
-*.txt linguist-detectable=false
+*.tex linguist-detectable=false
+*.aux linguist-detectable=false
